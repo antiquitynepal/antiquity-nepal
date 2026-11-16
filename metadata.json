@@ -1,0 +1,8 @@
+{
+  "name": "Kathmandu Heritage Atlas",
+  "description": "Explore Kathmandu Valley's sacred heritage sites through interactive 360-degree virtual tours, curated arrival routes, historical archives, and chaptered audio guides.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

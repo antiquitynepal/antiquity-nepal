@@ -1,0 +1,332 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'antiquitynepal@gmail.com';
+    }
+
+    function isValidTestimonial(data) {
+      return data.keys().hasAll([
+          'id',
+          'authorUid',
+          'visitorName',
+          'originCountry',
+          'visitType',
+          'visitedSiteId',
+          'visitedSiteName',
+          'visitDateLabel',
+          'rating',
+          'headline',
+          'story',
+          'adviceForFirstTimers',
+          'visibility',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'authorUid',
+          'visitorName',
+          'originCountry',
+          'visitType',
+          'visitedSiteId',
+          'visitedSiteName',
+          'visitDateLabel',
+          'rating',
+          'headline',
+          'story',
+          'adviceForFirstTimers',
+          'visibility',
+          'createdAt'
+        ])
+        && isValidId(data.id)
+        && isValidId(data.authorUid)
+        && data.authorUid == request.auth.uid
+        && data.visitorName is string && data.visitorName.size() >= 2 && data.visitorName.size() <= 80
+        && data.originCountry is string && data.originCountry.size() >= 2 && data.originCountry.size() <= 60
+        && data.visitType in ['First-Time Visitor', 'Returning Explorer']
+        && data.visitedSiteId is string && data.visitedSiteId.size() >= 2 && data.visitedSiteId.size() <= 80
+        && data.visitedSiteName is string && data.visitedSiteName.size() >= 2 && data.visitedSiteName.size() <= 120
+        && data.visitDateLabel is string && data.visitDateLabel.size() >= 3 && data.visitDateLabel.size() <= 40
+        && data.rating is int && data.rating >= 1 && data.rating <= 5
+        && data.headline is string && data.headline.size() >= 4 && data.headline.size() <= 140
+        && data.story is string && data.story.size() >= 15 && data.story.size() <= 1600
+        && data.adviceForFirstTimers is string && data.adviceForFirstTimers.size() <= 400
+        && data.visibility == 'public'
+        && data.createdAt is timestamp;
+    }
+
+    function isValidNewsletterSubscriber(data) {
+      return data.keys().hasAll([
+          'id',
+          'email',
+          'locale',
+          'source',
+          'status',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'email',
+          'locale',
+          'source',
+          'status',
+          'createdAt'
+        ])
+        && isValidId(data.id)
+        && data.email is string
+        && data.email.size() >= 5
+        && data.email.size() <= 160
+        && data.email.matches('^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$')
+        && data.locale in ['en', 'fr', 'es', 'ja', 'zh', 'pt']
+        && data.source == 'footer'
+        && data.status == 'active'
+        && data.createdAt is timestamp;
+    }
+
+    function isValidNotablePlace(data) {
+      return data.keys().hasAll([
+          'id',
+          'authorUid',
+          'name',
+          'location',
+          'category',
+          'era',
+          'image',
+          'distanceKm',
+          'distanceLabel',
+          'walkingDistance',
+          'transportation',
+          'commodities',
+          'mapX',
+          'mapY',
+          'history',
+          'visitingNote',
+          'visibility',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'authorUid',
+          'name',
+          'location',
+          'category',
+          'era',
+          'image',
+          'distanceKm',
+          'distanceLabel',
+          'walkingDistance',
+          'transportation',
+          'commodities',
+          'mapX',
+          'mapY',
+          'history',
+          'visitingNote',
+          'visibility',
+          'createdAt'
+        ])
+        && isValidId(data.id)
+        && isValidId(data.authorUid)
+        && data.authorUid == request.auth.uid
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 120
+        && data.location is string && data.location.size() >= 2 && data.location.size() <= 140
+        && data.category in [
+          'Hindu Sanctuary',
+          'Living Tradition',
+          'Buddhist Site',
+          'Historic Town',
+          'Cultural Landmark'
+        ]
+        && data.era is string && data.era.size() >= 2 && data.era.size() <= 120
+        && data.image is string && data.image.size() >= 1 && data.image.size() <= 500
+        && data.distanceKm is number && data.distanceKm >= 0.1 && data.distanceKm <= 100
+        && data.distanceLabel is string && data.distanceLabel.size() >= 2 && data.distanceLabel.size() <= 100
+        && data.walkingDistance is string && data.walkingDistance.size() >= 2 && data.walkingDistance.size() <= 260
+        && data.transportation is string && data.transportation.size() >= 2 && data.transportation.size() <= 260
+        && data.commodities is list && data.commodities.size() >= 1 && data.commodities.size() <= 12
+        && data.commodities[0] is string && data.commodities[0].size() <= 120
+        && data.mapX is number && data.mapX >= 50 && data.mapX <= 950
+        && data.mapY is number && data.mapY >= 40 && data.mapY <= 390
+        && data.history is string && data.history.size() >= 20 && data.history.size() <= 2000
+        && data.visitingNote is string && data.visitingNote.size() >= 2 && data.visitingNote.size() <= 400
+        && data.visibility == 'public'
+        && data.createdAt is timestamp;
+    }
+
+    match /visitor_testimonials/{testimonialId} {
+      allow get: if isValidId(testimonialId) && existing().visibility == 'public';
+      allow list: if existing().visibility == 'public';
+
+      allow create: if isVerifiedUser()
+        && isValidId(testimonialId)
+        && isValidTestimonial(incoming())
+        && incoming().id == testimonialId
+        && incoming().createdAt == request.time;
+
+      allow update: if isVerifiedUser()
+        && isValidId(testimonialId)
+        && existing().authorUid == request.auth.uid
+        && isValidTestimonial(incoming())
+        && incoming().id == existing().id
+        && incoming().authorUid == existing().authorUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'visitorName',
+          'originCountry',
+          'visitType',
+          'visitedSiteId',
+          'visitedSiteName',
+          'visitDateLabel',
+          'rating',
+          'headline',
+          'story',
+          'adviceForFirstTimers'
+        ]);
+
+      allow delete: if isSignedIn()
+        && isValidId(testimonialId)
+        && existing().authorUid == request.auth.uid;
+    }
+
+    match /newsletter_subscribers/{subscriberId} {
+      // Strictly protect subscriber email PII: only verified admin can read or remove entries
+      allow get: if isAdmin() && isValidId(subscriberId);
+      allow list: if isAdmin();
+
+      // Write-only public subscription creation enforced by strict field/format/timestamp validation
+      allow create: if isValidId(subscriberId)
+        && isValidNewsletterSubscriber(incoming())
+        && incoming().id == subscriberId
+        && incoming().createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if isAdmin() && isValidId(subscriberId);
+    }
+
+    match /notable_places/{placeId} {
+      // Publicly readable gazetteer additions; only verified administrator can publish, edit, or delete
+      allow get: if isValidId(placeId) && existing().visibility == 'public';
+      allow list: if existing().visibility == 'public';
+
+      allow create: if isAdmin()
+        && isValidId(placeId)
+        && isValidNotablePlace(incoming())
+        && incoming().id == placeId
+        && incoming().createdAt == request.time;
+
+      allow update: if isAdmin()
+        && isValidId(placeId)
+        && isValidNotablePlace(incoming())
+        && incoming().id == existing().id
+        && incoming().authorUid == existing().authorUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'name',
+          'location',
+          'category',
+          'era',
+          'image',
+          'distanceKm',
+          'distanceLabel',
+          'walkingDistance',
+          'transportation',
+          'commodities',
+          'mapX',
+          'mapY',
+          'history',
+          'visitingNote'
+        ]);
+
+      allow delete: if isAdmin() && isValidId(placeId);
+    }
+
+    function isValidManagedHeritageSite(data) {
+      return data.keys().hasAll([
+          'id',
+          'authorUid',
+          'actionType',
+          'targetSiteId',
+          'name',
+          'category',
+          'imageUrls',
+          'description',
+          'district',
+          'era',
+          'visibility',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'id',
+          'authorUid',
+          'actionType',
+          'targetSiteId',
+          'name',
+          'category',
+          'imageUrls',
+          'description',
+          'district',
+          'era',
+          'visibility',
+          'createdAt'
+        ])
+        && isValidId(data.id)
+        && isValidId(data.authorUid)
+        && data.authorUid == request.auth.uid
+        && data.actionType in ['add', 'hide']
+        && isValidId(data.targetSiteId)
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 140
+        && data.category in [
+          'Royal Plaza',
+          'Buddhist Stupa',
+          'Hindu Sanctuary',
+          'Hilltop Shrine'
+        ]
+        && data.imageUrls is list && data.imageUrls.size() >= 1 && data.imageUrls.size() <= 5
+        && data.imageUrls[0] is string && data.imageUrls[0].size() >= 1 && data.imageUrls[0].size() <= 600
+        && data.description is string && data.description.size() >= 1 && data.description.size() <= 2000
+        && data.district is string && data.district.size() <= 140
+        && data.era is string && data.era.size() <= 120
+        && data.visibility == 'public'
+        && data.createdAt is timestamp;
+    }
+
+    match /managed_heritage_sites/{recordId} {
+      // Publicly readable live directory overrides; strictly restricted to verified administrator for mutations
+      allow get: if isValidId(recordId) && existing().visibility == 'public';
+      allow list: if existing().visibility == 'public';
+
+      allow create: if isAdmin()
+        && isValidId(recordId)
+        && isValidManagedHeritageSite(incoming())
+        && incoming().id == recordId
+        && incoming().createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if isAdmin() && isValidId(recordId);
+    }
+  }
+}

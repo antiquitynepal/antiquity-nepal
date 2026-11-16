@@ -1,0 +1,396 @@
+{
+  "entities": {
+    "VisitorTestimonial": {
+      "title": "VisitorTestimonial",
+      "description": "Public, non-PII reflection and experience shared by a first-time or returning visitor to Kathmandu Valley heritage sites.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique document ID matching the Firestore path variable.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the verified author who published the testimony.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "visitorName": {
+          "type": "string",
+          "description": "Display name chosen by the visitor.",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "originCountry": {
+          "type": "string",
+          "description": "Home city or country of the visitor.",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "visitType": {
+          "type": "string",
+          "description": "Whether this was the visitor's first time in Kathmandu or a return visit.",
+          "enum": ["First-Time Visitor", "Returning Explorer"]
+        },
+        "visitedSiteId": {
+          "type": "string",
+          "description": "Slug or identifier of the visited Kathmandu heritage monument.",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "visitedSiteName": {
+          "type": "string",
+          "description": "Readable title of the visited site.",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "visitDateLabel": {
+          "type": "string",
+          "description": "Month and year of the visit.",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "rating": {
+          "type": "number",
+          "description": "Experience rating from 1 to 5."
+        },
+        "headline": {
+          "type": "string",
+          "description": "Concise title summarizing the visitor experience.",
+          "minLength": 4,
+          "maxLength": 140
+        },
+        "story": {
+          "type": "string",
+          "description": "Detailed narrative of how the visit felt.",
+          "minLength": 15,
+          "maxLength": 1600
+        },
+        "adviceForFirstTimers": {
+          "type": "string",
+          "description": "Practical guidance for future first-time travelers.",
+          "minLength": 0,
+          "maxLength": 400
+        },
+        "visibility": {
+          "type": "string",
+          "description": "Visibility scope enforced by Firestore list/get rules.",
+          "enum": ["public"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of publication."
+        }
+      },
+      "required": [
+        "id",
+        "authorUid",
+        "visitorName",
+        "originCountry",
+        "visitType",
+        "visitedSiteId",
+        "visitedSiteName",
+        "visitDateLabel",
+        "rating",
+        "headline",
+        "story",
+        "adviceForFirstTimers",
+        "visibility",
+        "createdAt"
+      ]
+    },
+    "NewsletterSubscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "Private email subscription record captured from the footer newsletter form for Kathmandu heritage site updates.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique subscriber document ID matching the Firestore path variable.",
+          "minLength": 4,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Lowercase trimmed email address submitted by the visitor.",
+          "minLength": 5,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"
+        },
+        "locale": {
+          "type": "string",
+          "description": "Active UI language code when the visitor subscribed.",
+          "enum": ["en", "fr", "es", "ja", "zh", "pt"]
+        },
+        "source": {
+          "type": "string",
+          "description": "Origin surface of the subscription.",
+          "enum": ["footer"]
+        },
+        "status": {
+          "type": "string",
+          "description": "Subscription state.",
+          "enum": ["active"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of subscription."
+        }
+      },
+      "required": ["id", "email", "locale", "source", "status", "createdAt"]
+    },
+    "NotablePlaceRecord": {
+      "title": "NotablePlaceRecord",
+      "description": "Administrator-curated additional Kathmandu Valley site or place worth visiting, published to the extended valley gazetteer.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique document ID matching the Firestore path variable.",
+          "minLength": 4,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the verified administrator who published the site.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display title of the temple, courtyard, or heritage place.",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "location": {
+          "type": "string",
+          "description": "Valley neighborhood or district.",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "category": {
+          "type": "string",
+          "description": "Curatorial heritage classification.",
+          "enum": [
+            "Hindu Sanctuary",
+            "Living Tradition",
+            "Buddhist Site",
+            "Historic Town",
+            "Cultural Landmark"
+          ]
+        },
+        "era": {
+          "type": "string",
+          "description": "Historical period or founding date.",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "image": {
+          "type": "string",
+          "description": "Preset image identifier or watermark-free HTTPS image URL.",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "distanceKm": {
+          "type": "number",
+          "description": "Distance from Central Kathmandu in kilometers."
+        },
+        "distanceLabel": {
+          "type": "string",
+          "description": "Concise readable distance label.",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "walkingDistance": {
+          "type": "string",
+          "description": "Walking trail duration and route note.",
+          "minLength": 2,
+          "maxLength": 260
+        },
+        "transportation": {
+          "type": "string",
+          "description": "Public transit and taxi guidance.",
+          "minLength": 2,
+          "maxLength": 260
+        },
+        "commodities": {
+          "type": "array",
+          "description": "Bounded list (1 to 12) of nearby visitor commodities and facilities."
+        },
+        "mapX": {
+          "type": "number",
+          "description": "SVG horizontal map coordinate (50 to 950)."
+        },
+        "mapY": {
+          "type": "number",
+          "description": "SVG vertical map coordinate (40 to 390)."
+        },
+        "history": {
+          "type": "string",
+          "description": "Historical background displayed in the History column.",
+          "minLength": 20,
+          "maxLength": 2000
+        },
+        "visitingNote": {
+          "type": "string",
+          "description": "Opening hours and courtyard etiquette note.",
+          "minLength": 2,
+          "maxLength": 400
+        },
+        "visibility": {
+          "type": "string",
+          "description": "Public visibility scope enforced by Firestore rules.",
+          "enum": ["public"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of publication."
+        }
+      },
+      "required": [
+        "id",
+        "authorUid",
+        "name",
+        "location",
+        "category",
+        "era",
+        "image",
+        "distanceKm",
+        "distanceLabel",
+        "walkingDistance",
+        "transportation",
+        "commodities",
+        "mapX",
+        "mapY",
+        "history",
+        "visitingNote",
+        "visibility",
+        "createdAt"
+      ]
+    },
+    "ManagedHeritageSiteAction": {
+      "title": "ManagedHeritageSiteAction",
+      "description": "Administrator-managed addition or removal override for the primary HERITAGE_SITES directory.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique document ID matching the Firestore path variable.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the verified administrator.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "actionType": {
+          "type": "string",
+          "description": "Whether this record adds a new heritage site or hides a built-in site.",
+          "enum": ["add", "hide"]
+        },
+        "targetSiteId": {
+          "type": "string",
+          "description": "Slug identifier of the added or hidden heritage site.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the heritage site.",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "category": {
+          "type": "string",
+          "description": "Heritage site category matching HeritageCategory.",
+          "enum": [
+            "Royal Plaza",
+            "Buddhist Stupa",
+            "Hindu Sanctuary",
+            "Hilltop Shrine"
+          ]
+        },
+        "imageUrls": {
+          "type": "array",
+          "description": "Bounded list (1 to 5) of primary and additional watermark-free image URLs or preset keys."
+        },
+        "description": {
+          "type": "string",
+          "description": "Architectural and historical description of the site.",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "district": {
+          "type": "string",
+          "description": "District or municipality in the Kathmandu Valley.",
+          "minLength": 0,
+          "maxLength": 140
+        },
+        "era": {
+          "type": "string",
+          "description": "Architectural era or founding period.",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "visibility": {
+          "type": "string",
+          "description": "Public read visibility enforced by Firestore rules.",
+          "enum": ["public"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the admin change."
+        }
+      },
+      "required": [
+        "id",
+        "authorUid",
+        "actionType",
+        "targetSiteId",
+        "name",
+        "category",
+        "imageUrls",
+        "description",
+        "district",
+        "era",
+        "visibility",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/visitor_testimonials/{testimonialId}": {
+      "schema": { "$ref": "#/entities/VisitorTestimonial" },
+      "description": "Publicly readable community testimonials contributed by verified visitors sharing their first-time and returning experiences in Kathmandu Valley."
+    },
+    "/newsletter_subscribers/{subscriberId}": {
+      "schema": { "$ref": "#/entities/NewsletterSubscriber" },
+      "description": "Write-only visitor email subscriptions for heritage site dispatches, readable exclusively by the verified atlas administrator."
+    },
+    "/notable_places/{placeId}": {
+      "schema": { "$ref": "#/entities/NotablePlaceRecord" },
+      "description": "Publicly readable notable Kathmandu Valley places curated and managed exclusively by the verified administrator."
+    },
+    "/managed_heritage_sites/{recordId}": {
+      "schema": { "$ref": "#/entities/ManagedHeritageSiteAction" },
+      "description": "Publicly readable administrator additions and removal overrides for the core HERITAGE_SITES directory, writable strictly by verified personnel."
+    }
+  }
+}
